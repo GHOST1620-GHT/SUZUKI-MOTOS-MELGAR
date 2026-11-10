@@ -1,0 +1,4 @@
+﻿Factura;Fecha;Cedula;Nombre;Celular;Correo;Total;Categoria;Placa
+FV-20001;10/11/2026;1234567890;Andrés Rodríguez Gómez;3001234567;andres@correo.com;350000;Repuestos;
+FV-20002;10/11/2026;1098765432;Laura Gómez Pérez;3109876543;;185000;Taller;XYZ45E
+FV-20003;10/11/2026;80123456;Carlos Ramírez;3157654321;;9890000;Moto;
