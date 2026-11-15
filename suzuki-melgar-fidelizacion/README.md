@@ -77,10 +77,19 @@ npm run dev               # http://localhost:3000
 > ⚠️ `npm run db:seed` **borra todos los datos** y carga los de ejemplo. Detenga el servidor antes de ejecutarlo.
 > Antes de entregar a producción, cambie las contraseñas o cree usuarios nuevos desde **Configuración**.
 
+### Probar sin instalar nada (StackBlitz)
+Abra `https://stackblitz.com/github/USUARIO/REPO` (repositorio público) y en la terminal ejecute:
+```
+npm run setup
+npm run dev:webpack
+```
+StackBlitz no soporta Turbopack, por eso se usa el compilador Webpack.
+
 ### Scripts
 | Comando | Uso |
 |---|---|
 | `npm run dev` | Servidor de desarrollo |
+| `npm run dev:webpack` | Servidor de desarrollo con Webpack (StackBlitz) |
 | `npm run build` / `npm start` | Compilar y ejecutar en producción |
 | `npm run db:generate` | Genera una migración SQL tras modificar `src/db/schema.ts` |
 | `npm run db:migrate` | Aplica las migraciones a la base de `DATABASE_URL` |
