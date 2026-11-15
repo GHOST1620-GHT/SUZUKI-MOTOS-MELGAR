@@ -2,29 +2,31 @@
 
 import bcrypt from "bcryptjs";
 import { and, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createSession, CUSTOMER_COOKIE, destroySession, requireCustomer } from "@/lib/auth";
+import { cookieStore, createSession, CUSTOMER_COOKIE, destroySession, requireCustomer } from "@/lib/auth";
+import { safeRevalidate } from "@/lib/revalidate";
 import { db, schema as S } from "@/lib/db";
 import { LoyaltyError, redeemReward } from "@/lib/loyalty";
 
 const str = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 function go(path: string, msg: { ok?: string; error?: string }): never {
-  revalidatePath("/portal", "layout");
+  safeRevalidate("/portal", "layout");
   redirect(`${path}${path.includes("?") ? "&" : "?"}${msg.ok ? `ok=${encodeURIComponent(msg.ok)}` : `error=${encodeURIComponent(msg.error ?? "")}`}`);
 }
 
 export async function customerLogin(fd: FormData) {
+  const jar = await cookieStore();
   const document = str(fd, "document").replace(/\D/g, "");
   const c = await db.query.customers.findFirst({ where: eq(S.customers.document, document) });
   if (!c?.passwordHash) go("/portal/login", { error: c ? "Aún no ha activado su cuenta. Actívela abajo." : "No encontramos esa cédula en el programa." });
   if (!(await bcrypt.compare(str(fd, "password"), c.passwordHash))) go("/portal/login", { error: "Contraseña incorrecta" });
-  await createSession(CUSTOMER_COOKIE, { sub: c.id, kind: "customer" });
+  await createSession(CUSTOMER_COOKIE, { sub: c.id, kind: "customer" }, jar);
   redirect("/portal");
 }
 
 /** Activación: el cliente confirma su identidad con cédula + celular registrado en el concesionario. */
 export async function activateAccount(fd: FormData) {
+  const jar = await cookieStore();
   const document = str(fd, "document").replace(/\D/g, "");
   const phone = str(fd, "phone").replace(/\D/g, "");
   const pwd = str(fd, "password");
@@ -33,7 +35,7 @@ export async function activateAccount(fd: FormData) {
   const c = await db.query.customers.findFirst({ where: eq(S.customers.document, document) });
   if (!c || c.phone.slice(-10) !== phone.slice(-10)) go("/portal/activar", { error: "Los datos no coinciden con nuestros registros. Acérquese al concesionario para actualizarlos." });
   await db.update(S.customers).set({ passwordHash: await bcrypt.hash(pwd, 10), portalActivatedAt: new Date() }).where(eq(S.customers.id, c.id));
-  await createSession(CUSTOMER_COOKIE, { sub: c.id, kind: "customer" });
+  await createSession(CUSTOMER_COOKIE, { sub: c.id, kind: "customer" }, jar);
   redirect("/portal?ok=" + encodeURIComponent("¡Cuenta activada! Bienvenido al Club"));
 }
 
@@ -86,5 +88,5 @@ export async function changePassword(fd: FormData) {
 export async function markNotificationsRead() {
   const c = await requireCustomer();
   await db.update(S.notifications).set({ read: true }).where(and(eq(S.notifications.customerId, c.id), eq(S.notifications.read, false)));
-  revalidatePath("/portal", "layout");
+  safeRevalidate("/portal", "layout");
 }

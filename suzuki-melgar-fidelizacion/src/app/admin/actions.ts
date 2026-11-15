@@ -2,7 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { and, eq, ne, sql } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { safeRevalidate } from "@/lib/revalidate";
 import { redirect } from "next/navigation";
 import { requireStaff } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
@@ -29,7 +29,7 @@ const dateOf = (fd: FormData, k: string) => {
 function go(path: string, msg: { ok?: string; error?: string }): never {
   const sep = path.includes("?") ? "&" : "?";
   const q = msg.ok ? `ok=${encodeURIComponent(msg.ok)}` : `error=${encodeURIComponent(msg.error ?? "")}`;
-  revalidatePath("/admin", "layout");
+  safeRevalidate("/admin", "layout");
   redirect(`${path}${sep}${q}`);
 }
 function errMsg(e: unknown) {
@@ -247,7 +247,7 @@ export async function updateKm(fd: FormData) {
 export async function logReminder(input: { customerId: string; motorcycleId?: string | null; kind: string; message: string }) {
   const user = await requireStaff();
   await db.insert(S.reminderLogs).values({ ...input, motorcycleId: input.motorcycleId ?? null, sentById: user.id });
-  revalidatePath("/admin/mantenimientos");
+  safeRevalidate("/admin/mantenimientos");
 }
 
 /* ---------- Compras ---------- */

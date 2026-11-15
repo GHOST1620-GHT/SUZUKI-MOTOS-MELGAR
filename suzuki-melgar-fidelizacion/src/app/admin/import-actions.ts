@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { safeRevalidate } from "@/lib/revalidate";
 import { requireStaff } from "@/lib/auth";
 import { db, schema as S } from "@/lib/db";
 import type { Category } from "@/lib/format";
@@ -18,6 +18,6 @@ export async function importMasControl(payload: { fileName: string; rows: Import
     log: r.errors.slice(0, 200).join("\n"),
     createdById: user.id,
   });
-  revalidatePath("/admin", "layout");
+  safeRevalidate("/admin", "layout");
   return r;
 }

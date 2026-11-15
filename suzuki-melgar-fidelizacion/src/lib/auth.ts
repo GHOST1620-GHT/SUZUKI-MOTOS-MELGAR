@@ -10,15 +10,23 @@ export const STAFF_COOKIE = "sm_staff";
 export const CUSTOMER_COOKIE = "sm_cliente";
 
 type SessionPayload = { sub: string; kind: "staff" | "customer"; role?: string };
+type CookieStore = Awaited<ReturnType<typeof cookies>>;
 
-export async function createSession(cookieName: string, payload: SessionPayload) {
+/**
+ * Obtiene el almacén de cookies. En las acciones que consultan la base de datos antes de
+ * guardar la sesión, llame a esto AL INICIO (antes de cualquier consulta): algunos entornos,
+ * como StackBlitz, pierden el contexto de la petición después de esperar a la base de datos.
+ */
+export const cookieStore = () => cookies();
+
+export async function createSession(cookieName: string, payload: SessionPayload, store?: CookieStore) {
   const token = await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(secret);
-  const store = await cookies();
-  store.set(cookieName, token, {
+  const jar = store ?? (await cookies());
+  jar.set(cookieName, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
