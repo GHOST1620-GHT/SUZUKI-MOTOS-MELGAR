@@ -6,6 +6,9 @@ import { closeDb, db } from "../src/lib/db";
 
 async function main() {
   const url = process.env.DATABASE_URL ?? "";
+  if (process.env.VERCEL && !url.startsWith("postgres")) {
+    throw new Error("Falta la base de datos: en Vercel vaya a Storage → Create Database → Neon y conéctela a este proyecto (crea DATABASE_URL). Luego vuelva a desplegar.");
+  }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const m: any = url.startsWith("postgres") ? migratePg : migratePglite;
   await m(db, { migrationsFolder: "./drizzle" });

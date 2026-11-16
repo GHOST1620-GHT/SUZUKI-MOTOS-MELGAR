@@ -97,20 +97,17 @@ StackBlitz no soporta Turbopack, por eso se usa el compilador Webpack.
 
 ---
 
-## 4. Puesta en producción
+## 4. Puesta en producción (Vercel + Neon)
 
-1. **Base de datos PostgreSQL** (obligatorio en producción; PGlite es solo para desarrollo). Opciones: Neon, Supabase o Railway (tienen plan gratuito), o un servidor propio.
-   ```
-   DATABASE_URL="postgres://usuario:clave@host:5432/suzuki"
-   ```
-2. Ejecute `npm run db:migrate` (no ejecute el seed en producción). Luego cree el primer administrador: una opción es correr el seed una sola vez y después cambiar contraseñas y borrar los datos de prueba. Otra es insertar el usuario directamente en la tabla `users`.
-3. **Hosting:** Vercel (recomendado para Next.js), Railway, Render o un VPS con `npm run build && npm start` detrás de Nginx.
-4. **Variables de entorno:** `AUTH_SECRET` (cadena aleatoria larga), `MASCONTROL_API_KEY` y `CRON_SECRET`.
-5. **Cron diario:** programe `GET https://SU-DOMINIO/api/cron?key=CRON_SECRET` (Vercel Cron, cron-job.org o crontab).
-6. Configure en **Configuración** el número de WhatsApp del concesionario y las reglas de puntos.
-7. **Logo:** está en `public/logo.png` (fondos claros), `public/logo-white.png` (fondos oscuros) y `public/logo-mark.png` (símbolo). Los íconos de la app son `public/icon-192.png`, `public/icon-512.png`, `src/app/icon.png` y `src/app/apple-icon.png`. Para cambiarlo, reemplace esos archivos.
+1. Suba el proyecto a GitHub e impórtelo en **vercel.com → Add New → Project**. Si el proyecto está dentro de una carpeta del repositorio, indíquela en **Root Directory**.
+2. Agregue las variables de entorno `AUTH_SECRET` (cadena aleatoria larga), `CRON_SECRET` y `MASCONTROL_API_KEY`.
+3. En el proyecto de Vercel: **Storage → Create Database → Neon** (plan gratuito). Conéctela al proyecto; esto crea `DATABASE_URL`.
+4. **Redeploy.** El despliegue (`vercel.json` → `npm run vercel-build`) aplica las migraciones y, **solo si la base está vacía**, carga los datos de demostración.
+5. El cron diario (cumpleaños y vencimientos) queda configurado en `vercel.json` (6:00 a. m. hora Colombia).
 
----
+**Para pasar de demostración a uso real:** vacíe la base desde la consola SQL de Neon (`TRUNCATE notifications, reminder_logs, point_movements, service_records, redemptions, referrals, purchases, motorcycles, customers, import_batches;`), cambie las contraseñas desde **Configuración → Usuarios** y ajuste premios, niveles y reglas de puntos.
+
+Otros hostings: cualquier servidor con Node 20+ y PostgreSQL (`npm run db:migrate && npm run build && npm start`).
 
 ## 5. Integración con MasControl
 

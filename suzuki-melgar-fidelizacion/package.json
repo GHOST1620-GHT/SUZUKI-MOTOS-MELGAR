@@ -11,7 +11,8 @@
     "setup": "tsx scripts/migrate.ts && tsx scripts/seed.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
-    "dev:webpack": "next dev --webpack"
+    "dev:webpack": "next dev --webpack",
+    "vercel-build": "tsx scripts/migrate.ts && tsx scripts/seed.ts --si-vacia && next build"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.16",

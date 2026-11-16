@@ -26,6 +26,14 @@ const COLORS = ["Azul", "Negro", "Rojo", "Blanco", "Gris", "Amarillo"];
 const S = schema;
 
 async function main() {
+  if (process.argv.includes("--si-vacia")) {
+    const existing = await db.select({ id: S.users.id }).from(S.users).limit(1);
+    if (existing.length) {
+      console.log("La base de datos ya tiene información: no se cargan datos de ejemplo.");
+      await closeDb();
+      process.exit(0);
+    }
+  }
   console.log("Limpiando base de datos…");
   await db.execute(sql`TRUNCATE notifications, reminder_logs, point_movements, service_records, redemptions, referrals, purchases, motorcycles, customers, rewards, levels, import_batches, users, settings CASCADE`);
 
