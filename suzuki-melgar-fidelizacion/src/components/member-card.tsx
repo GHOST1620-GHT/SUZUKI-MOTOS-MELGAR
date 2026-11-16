@@ -9,8 +9,10 @@ export function MemberCard({ name, level, color, points, code, document, since }
       <Bike className="pointer-events-none absolute -bottom-4 right-4 size-32 text-white/10" />
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70">Club Suzuki Melgar</p>
-          <p className="mt-1 text-lg font-bold">{name}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-white.png" alt="Suzuki Melgar Moto" className="h-10 w-auto" />
+          <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70">Club de fidelización</p>
+          <p className="text-lg font-bold">{name}</p>
         </div>
         <span className="rounded-full px-3 py-1 text-xs font-extrabold uppercase tracking-wider shadow" style={{ background: color }}>★ {level}</span>
       </div>

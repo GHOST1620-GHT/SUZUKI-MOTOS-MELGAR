@@ -1,7 +1,7 @@
 import { db, schema } from "./db";
 
 export const DEFAULT_SETTINGS = {
-  businessName: "Suzuki Melgar",
+  businessName: "Suzuki Melgar Moto",
   /** WhatsApp del concesionario, formato internacional sin "+" */
   businessPhone: "573000000000",
   businessAddress: "Melgar, Tolima",

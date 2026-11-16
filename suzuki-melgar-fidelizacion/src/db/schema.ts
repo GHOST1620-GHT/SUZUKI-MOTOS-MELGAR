@@ -1,5 +1,5 @@
 /**
- * Esquema de base de datos — Sistema de Fidelización Suzuki Melgar (PostgreSQL).
+ * Esquema de base de datos — Sistema de Fidelización Suzuki Melgar Moto (PostgreSQL).
  */
 import { relations } from "drizzle-orm";
 import { boolean, doublePrecision, index, integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";

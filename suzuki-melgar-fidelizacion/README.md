@@ -1,6 +1,6 @@
-# Club de Fidelización · Suzuki Melgar
+# Club de Fidelización · Suzuki Melgar Moto
 
-Sistema completo de fidelización para el concesionario **Suzuki Melgar**, con dos aplicaciones:
+Sistema completo de fidelización para el concesionario **Suzuki Melgar Moto**, con dos aplicaciones:
 
 - **Panel del personal** (`/admin`), para administradores, asesores y taller.
 - **Portal de clientes** (`/portal`), que se puede instalar en el celular como app (PWA).
@@ -108,7 +108,7 @@ StackBlitz no soporta Turbopack, por eso se usa el compilador Webpack.
 4. **Variables de entorno:** `AUTH_SECRET` (cadena aleatoria larga), `MASCONTROL_API_KEY` y `CRON_SECRET`.
 5. **Cron diario:** programe `GET https://SU-DOMINIO/api/cron?key=CRON_SECRET` (Vercel Cron, cron-job.org o crontab).
 6. Configure en **Configuración** el número de WhatsApp del concesionario y las reglas de puntos.
-7. **Logo oficial:** reemplace el ícono en `src/components/brand.tsx` y los íconos `public/icon-192.png` y `public/icon-512.png` con los archivos que entregue el concesionario. El uso de la marca Suzuki debe estar autorizado por el concesionario.
+7. **Logo:** está en `public/logo.png` (fondos claros), `public/logo-white.png` (fondos oscuros) y `public/logo-mark.png` (símbolo). Los íconos de la app son `public/icon-192.png`, `public/icon-512.png`, `src/app/icon.png` y `src/app/apple-icon.png`. Para cambiarlo, reemplace esos archivos.
 
 ---
 

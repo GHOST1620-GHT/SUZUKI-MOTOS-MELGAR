@@ -1,18 +1,24 @@
-import { Bike } from "lucide-react";
-
-/** Marca del concesionario. Para usar el logo oficial, ponga /public/logo.png y reemplace el ícono. */
-export function Brand({ dark = false, compact = false }: { dark?: boolean; compact?: boolean }) {
+/**
+ * Logo del concesionario (archivos en /public):
+ *  - logo.png        → fondos claros
+ *  - logo-white.png  → fondos oscuros
+ *  - logo-mark.png   → solo el símbolo (espacios pequeños)
+ * Para cambiar el logo basta con reemplazar esos archivos.
+ */
+export function Brand({ dark = false, compact = false, size = "md", label = true }: { dark?: boolean; compact?: boolean; size?: "md" | "lg"; label?: boolean }) {
+  if (compact) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src="/logo-mark.png" alt="Suzuki Melgar Moto" className="h-8 w-auto" />;
+  }
   return (
-    <div className="flex items-center gap-2.5">
-      <span className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-md ring-1 ring-white/20">
-        <Bike className="size-5" />
-      </span>
-      {!compact && (
-        <span className="leading-tight">
-          <span className={`block text-base font-extrabold tracking-tight ${dark ? "text-white" : "text-brand-800"}`}>
-            SUZUKI <span className={dark ? "text-red-400" : "text-accent-500"}>MELGAR</span>
-          </span>
-          <span className={`block text-[10px] font-medium uppercase tracking-[0.12em] whitespace-nowrap ${dark ? "text-brand-200" : "text-slate-500"}`}>Club de fidelización</span>
+    <div className="flex items-center gap-3">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={dark ? "/logo-white.png" : "/logo.png"} alt="Suzuki Melgar Moto" className={size === "lg" ? "h-20 w-auto sm:h-24" : "h-11 w-auto"} />
+      {label && size === "md" && (
+        <span className={`border-l pl-3 text-[10px] font-semibold uppercase leading-tight tracking-[0.12em] ${dark ? "border-white/25 text-brand-100" : "border-slate-200 text-slate-500"}`}>
+          Club de
+          <br />
+          fidelización
         </span>
       )}
     </div>

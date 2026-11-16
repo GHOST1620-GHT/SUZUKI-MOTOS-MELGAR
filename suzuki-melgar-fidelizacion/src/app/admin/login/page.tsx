@@ -14,7 +14,7 @@ export default function StaffLogin() {
         <div className="relative flex h-full flex-col justify-between p-12 text-white">
           <Brand dark />
           <div>
-            <h2 className="text-4xl font-bold leading-tight">Club de Fidelización<br />Suzuki Melgar</h2>
+            <h2 className="text-4xl font-bold leading-tight">Club de Fidelización<br />Suzuki Melgar Moto</h2>
             <p className="mt-4 max-w-md text-lg text-brand-100">Registra compras, premia a tus clientes, controla mantenimientos y haz que cada moto vuelva a nuestro taller.</p>
             <div className="mt-10 grid max-w-md grid-cols-3 gap-4 text-center">
               {[["Puntos", "por cada compra"], ["Niveles", "Bronce a Platino"], ["WhatsApp", "recordatorios"]].map(([a, b]) => (
@@ -25,7 +25,7 @@ export default function StaffLogin() {
               ))}
             </div>
           </div>
-          <p className="text-sm text-brand-200">© {new Date().getFullYear()} Suzuki Melgar · Melgar, Tolima</p>
+          <p className="text-sm text-brand-200">© {new Date().getFullYear()} Suzuki Melgar Moto · Melgar, Tolima</p>
         </div>
       </div>
       <div className="flex items-center justify-center p-6">

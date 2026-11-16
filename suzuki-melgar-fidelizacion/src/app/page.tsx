@@ -6,13 +6,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white">
       <div className="mx-auto flex min-h-screen max-w-5xl flex-col px-6 py-8">
-        <header className="flex items-center justify-between">
-          <Brand dark />
+        <header className="flex items-center justify-end">
           <Link href="/admin/login" className="text-sm text-brand-100 hover:text-white">Acceso personal →</Link>
         </header>
         <main className="flex flex-1 flex-col items-center justify-center py-16 text-center">
-          <span className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-brand-100 ring-1 ring-white/20">Club de Fidelización</span>
-          <h1 className="mt-6 max-w-3xl text-4xl font-extrabold leading-tight sm:text-6xl">Tu moto te da <span className="text-yellow-300">más</span> en Suzuki Melgar</h1>
+          <Brand dark size="lg" />
+          <span className="mt-8 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-brand-100 ring-1 ring-white/20">Club de Fidelización</span>
+          <h1 className="mt-6 max-w-3xl text-4xl font-extrabold leading-tight sm:text-6xl">Tu moto te da <span className="text-yellow-300">más</span> en Suzuki Melgar Moto</h1>
           <p className="mt-5 max-w-xl text-lg text-brand-100">Acumula puntos en cada compra, repuesto y servicio de taller. Canjéalos por premios, sube de nivel y nunca olvides un mantenimiento.</p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Link href="/portal/login" className="btn bg-accent-500 px-8 py-4 text-base text-white hover:bg-accent-600">Soy cliente · Ver mis puntos</Link>
@@ -36,7 +36,7 @@ export default function Home() {
             })}
           </div>
         </main>
-        <footer className="text-center text-xs text-brand-200">© {new Date().getFullYear()} Suzuki Melgar · Melgar, Tolima</footer>
+        <footer className="text-center text-xs text-brand-200">© {new Date().getFullYear()} Suzuki Melgar Moto · Melgar, Tolima</footer>
       </div>
     </div>
   );

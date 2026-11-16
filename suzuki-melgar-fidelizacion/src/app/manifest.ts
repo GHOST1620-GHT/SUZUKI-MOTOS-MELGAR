@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Club Suzuki Melgar",
+    name: "Club Suzuki Melgar Moto",
     short_name: "Club Suzuki",
-    description: "Tus puntos, premios y mantenimientos Suzuki Melgar",
+    description: "Tus puntos, premios y mantenimientos Suzuki Melgar Moto",
     start_url: "/portal",
     display: "standalone",
     background_color: "#0a1c57",

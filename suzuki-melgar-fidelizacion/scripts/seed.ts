@@ -66,7 +66,7 @@ async function main() {
       { name: "Impermeable 2 piezas", category: "ACCESORIO", pointsCost: 1800, emoji: "🧥", description: "Chaqueta y pantalón impermeable reflectivo.", stock: 12 },
       { name: "Chaleco reflectivo", category: "ACCESORIO", pointsCost: 600, emoji: "🦺", description: "Chaleco reglamentario con número de placa.", stock: 30 },
       { name: "Casco certificado", category: "ACCESORIO", pointsCost: 6000, emoji: "⛑️", description: "Casco integral certificado.", stock: 6, minLevelId: plata.id },
-      { name: "Gorra Suzuki Melgar", category: "ACCESORIO", pointsCost: 350, emoji: "🧢", description: "Gorra oficial del concesionario.", stock: 40 },
+      { name: "Gorra Suzuki Melgar Moto", category: "ACCESORIO", pointsCost: 350, emoji: "🧢", description: "Gorra oficial del concesionario.", stock: 40 },
       { name: "Rodada VIP al Nevado", category: "EXPERIENCIA", pointsCost: 9000, emoji: "🏔️", description: "Rodada guiada con almuerzo e hidratación.", stock: 10, minLevelId: oro.id },
       { name: "Curso de manejo seguro", category: "EXPERIENCIA", pointsCost: 2800, emoji: "🎓", description: "Curso práctico de 4 horas con instructor certificado.", stock: 20 },
     ])
