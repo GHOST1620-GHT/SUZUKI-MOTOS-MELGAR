@@ -8,7 +8,6 @@ export const DEFAULT_SETTINGS = {
   /** Pesos (COP) necesarios para ganar 1 punto, por categoría */
   pesosPerPointMOTO: 10000,
   pesosPerPointREPUESTOS: 2000,
-  pesosPerPointACCESORIOS: 2000,
   pesosPerPointTALLER: 1500,
   /** Valor de referencia de 1 punto en COP (para reportes de pasivo) */
   pointValueCOP: 50,

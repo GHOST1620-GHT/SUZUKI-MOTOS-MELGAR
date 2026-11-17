@@ -27,9 +27,9 @@ export async function salesByMonth(n = 12) {
       group by 1, 2`)
   );
   return months.map(({ key, label }) => {
-    const r = { month: label, MOTO: 0, REPUESTOS: 0, ACCESORIOS: 0, TALLER: 0 } as Record<string, number | string>;
+    const r = { month: label, MOTO: 0, REPUESTOS: 0, TALLER: 0 } as Record<string, number | string>;
     for (const x of rows.filter((x) => x.m === key)) r[x.category] = x.total;
-    return r as { month: string; MOTO: number; REPUESTOS: number; ACCESORIOS: number; TALLER: number };
+    return r as { month: string; MOTO: number; REPUESTOS: number; TALLER: number };
   });
 }
 

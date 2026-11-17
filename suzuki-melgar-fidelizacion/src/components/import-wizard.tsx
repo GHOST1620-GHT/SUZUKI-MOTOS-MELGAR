@@ -127,7 +127,7 @@ export function ImportWizard({ action }: { action: (p: { fileName: string; rows:
               <label className="block">
                 <span className="label">Categoría por defecto</span>
                 <select className="input" value={defCat} onChange={(e) => setDefCat(e.target.value as Category)}>
-                  <option value="MOTO">Moto</option><option value="REPUESTOS">Repuestos</option><option value="ACCESORIOS">Accesorios</option><option value="TALLER">Taller</option>
+                  <option value="MOTO">Moto</option><option value="REPUESTOS">Repuestos</option><option value="TALLER">Taller</option>
                 </select>
                 <span className="hint">Cuando la fila no indique la categoría.</span>
               </label>

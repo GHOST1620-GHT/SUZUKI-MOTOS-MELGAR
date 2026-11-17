@@ -111,7 +111,6 @@ export async function getLevelProgress(lifetimePoints: number) {
 export const CATEGORY_LABEL: Record<Category, string> = {
   MOTO: "Compra de moto",
   REPUESTOS: "Repuestos",
-  ACCESORIOS: "Accesorios",
   TALLER: "Servicio de taller",
 };
 

@@ -1,7 +1,6 @@
 export const CATEGORIES = {
   MOTO: { label: "Moto", color: "#1d4ed8" },
   REPUESTOS: { label: "Repuestos", color: "#0891b2" },
-  ACCESORIOS: { label: "Accesorios", color: "#7c3aed" },
   TALLER: { label: "Taller / Servicio", color: "#ea580c" },
 } as const;
 export type Category = keyof typeof CATEGORIES;
@@ -40,7 +39,7 @@ export const ROLES: Record<string, string> = {
 
 export const REWARD_CATEGORIES: Record<string, string> = {
   SERVICIO: "Servicio de taller",
-  ACCESORIO: "Accesorio",
+  ACCESORIO: "Obsequio",
   DESCUENTO: "Descuento",
   EXPERIENCIA: "Experiencia",
 };

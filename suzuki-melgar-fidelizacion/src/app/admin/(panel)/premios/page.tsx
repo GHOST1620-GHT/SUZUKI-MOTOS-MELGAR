@@ -1,5 +1,5 @@
 import { asc, count, eq } from "drizzle-orm";
-import { Edit3, Gift, Plus } from "lucide-react";
+import { Edit3, Gift, Plus, Trash2 } from "lucide-react";
 import { requireStaff } from "@/lib/auth";
 import { db, schema as S } from "@/lib/db";
 import { pts, REWARD_CATEGORIES } from "@/lib/format";
@@ -7,7 +7,7 @@ import { getSettings } from "@/lib/settings";
 import type { Level, Reward } from "@/db/schema";
 import { Modal, SubmitButton } from "@/components/client";
 import { Badge, EmptyState, Field, PageHeader } from "@/components/ui";
-import { saveReward, toggleReward } from "../../actions";
+import { deleteReward, saveReward, toggleReward } from "../../actions";
 
 export const metadata = { title: "Catálogo de premios" };
 
@@ -78,6 +78,12 @@ export default async function Premios() {
                   <div className="flex gap-1">
                     <form action={toggleReward}><input type="hidden" name="id" value={r.id} /><button className="btn btn-ghost btn-sm">{r.active ? "Ocultar" : "Activar"}</button></form>
                     <Modal title="Editar premio" trigger={<Edit3 className="size-3.5" />} triggerClassName="btn btn-secondary btn-sm" size="lg"><RewardForm r={r} levels={levels} /></Modal>
+                    <form action={deleteReward}>
+                      <input type="hidden" name="id" value={r.id} />
+                      <SubmitButton className="btn btn-ghost btn-sm text-red-600 hover:bg-red-50" pendingText="…" confirm={`¿Eliminar el premio "${r.name}"? Si algún cliente ya lo canjeó, solo se ocultará para conservar su historial.`}>
+                        <Trash2 className="size-3.5" />
+                      </SubmitButton>
+                    </form>
                   </div>
                 </div>
               </div>

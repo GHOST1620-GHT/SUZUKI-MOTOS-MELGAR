@@ -50,7 +50,6 @@ export default async function Perfil() {
           <ul className="mt-2 grid gap-1 sm:grid-cols-2">
             <li>🏍️ Motos: 1 pt por cada ${pts(s.pesosPerPointMOTO)}</li>
             <li>⚙️ Repuestos: 1 pt por cada ${pts(s.pesosPerPointREPUESTOS)}</li>
-            <li>🪖 Accesorios: 1 pt por cada ${pts(s.pesosPerPointACCESORIOS)}</li>
             <li>🔧 Taller: 1 pt por cada ${pts(s.pesosPerPointTALLER)}</li>
             <li>🎂 Cumpleaños: {pts(s.birthdayBonus)} pts de regalo</li>
             <li>🤝 Referidos: {pts(s.referralBonus)} pts por amigo que compre</li>

@@ -3,6 +3,7 @@ import { SubmitButton } from "@/components/client";
 import { PortalAuthShell } from "@/components/portal-shell";
 import { customerLogin } from "../actions";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Ingresar · Portal de clientes" };
 
 export default function PortalLogin() {
@@ -22,7 +23,7 @@ export default function PortalLogin() {
       <div className="mt-6 rounded-xl bg-brand-50 p-4 text-center text-sm text-brand-900">
         ¿Primera vez? <Link href="/portal/activar" className="font-bold underline">Activa tu cuenta</Link> con tu cédula y el celular que registraste en el concesionario.
       </div>
-      <p className="mt-4 text-center text-xs text-slate-400">Demo: cédula 1234567890 · contraseña cliente123</p>
+      {process.env.SHOW_DEMO_HINTS === "1" && <p className="mt-4 text-center text-xs text-slate-400">Demo: cédula 1234567890 · contraseña cliente123</p>}
     </PortalAuthShell>
   );
 }

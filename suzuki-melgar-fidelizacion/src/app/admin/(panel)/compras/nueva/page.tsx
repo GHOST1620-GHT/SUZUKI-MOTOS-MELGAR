@@ -24,7 +24,7 @@ export default async function NuevaCompra({ searchParams }: { searchParams: Prom
 
   return (
     <div className="mx-auto max-w-3xl">
-      <PageHeader title="Registrar compra" subtitle="Suma puntos al cliente por compras de motos, repuestos, accesorios o servicios de taller." />
+      <PageHeader title="Registrar compra" subtitle="Suma puntos al cliente por compras de motos, repuestos o servicios de taller." />
 
       {!c ? (
         <Card title="1. Buscar cliente">
@@ -54,11 +54,11 @@ export default async function NuevaCompra({ searchParams }: { searchParams: Prom
             <div className="space-y-5">
               <div>
                 <span className="label">Categoría</span>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <div className="grid grid-cols-3 gap-2">
                   {(Object.entries(CATEGORIES) as [string, { label: string; color: string }][]).map(([k, v]) => (
                     <label key={k} className="cursor-pointer rounded-xl border-2 border-slate-200 p-3 text-center transition has-[:checked]:border-brand-700 has-[:checked]:bg-brand-50">
                       <input type="radio" name="category" value={k} defaultChecked={k === defaultCat} className="sr-only" />
-                      <span className="block text-2xl">{{ MOTO: "🏍️", REPUESTOS: "⚙️", ACCESORIOS: "🪖", TALLER: "🔧" }[k]}</span>
+                      <span className="block text-2xl">{{ MOTO: "🏍️", REPUESTOS: "⚙️", TALLER: "🔧" }[k]}</span>
                       <span className="block text-sm font-semibold text-slate-800">{v.label}</span>
                       <span className="block text-[11px] text-slate-500">1 pt c/ ${rates[k].toLocaleString("es-CO")}</span>
                     </label>

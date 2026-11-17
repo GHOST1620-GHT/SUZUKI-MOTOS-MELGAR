@@ -16,7 +16,7 @@ export const templates = {
   maintenance: (name: string, model: string, plate: string | null, business: string) =>
     `Hola ${name} 👋, te saludamos de ${business}. Tu ${model}${plate ? ` (${plate})` : ""} ya está próxima a su mantenimiento preventivo 🔧. ¿Te agendamos una cita en el taller? Recuerda que cada servicio te suma puntos en nuestro programa de fidelización.`,
   inactive: (name: string, points: number, business: string) =>
-    `Hola ${name}, te extrañamos en ${business} 🏍️. Tienes ${points.toLocaleString("es-CO")} puntos disponibles para canjear por servicios y accesorios. ¡Te esperamos!`,
+    `Hola ${name}, te extrañamos en ${business} 🏍️. Tienes ${points.toLocaleString("es-CO")} puntos disponibles para canjear por servicios y repuestos. ¡Te esperamos!`,
   birthday: (name: string, business: string, bonus: number) =>
     `¡Feliz cumpleaños ${name}! 🎂 En ${business} te regalamos ${bonus} puntos. Pasa por el concesionario y consiéntete con un premio.`,
   points: (name: string, points: number, level: string, business: string) =>

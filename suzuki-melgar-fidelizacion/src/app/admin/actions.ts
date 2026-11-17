@@ -77,7 +77,7 @@ export async function createCustomer(fd: FormData) {
         })
         .returning();
       if (s.welcomeBonus > 0) await addMovement(tx, { customerId: c.id, type: "BIENVENIDA", points: s.welcomeBonus, description: "Bono de bienvenida al programa", createdById: user.id });
-      await notify(tx, c.id, `¡Bienvenido al Club ${s.businessName}! 🏍️`, `Te regalamos ${s.welcomeBonus} puntos para empezar. Acumula en motos, repuestos, accesorios y taller.`);
+      await notify(tx, c.id, `¡Bienvenido al Club ${s.businessName}! 🏍️`, `Te regalamos ${s.welcomeBonus} puntos para empezar. Acumula en motos, repuestos y taller.`);
       if (referrer) {
         await tx.insert(S.referrals).values({ referrerId: referrer.id, name: `${c.firstName} ${c.lastName}`, phone: c.phone, referredCustomerId: c.id, status: "CONTACTADO" });
       }
@@ -379,6 +379,19 @@ export async function toggleReward(fd: FormData) {
   go("/admin/premios", { ok: r.active ? "Premio desactivado" : "Premio activado" });
 }
 
+/** Elimina un premio. Si ya fue canjeado, solo se oculta para conservar el historial de los clientes. */
+export async function deleteReward(fd: FormData) {
+  await requireStaff(["ADMIN", "ASESOR"]);
+  const id = str(fd, "id");
+  const [used] = await db.select({ n: sql<number>`count(*)::int` }).from(S.redemptions).where(eq(S.redemptions.rewardId, id));
+  if (used.n > 0) {
+    await db.update(S.rewards).set({ active: false }).where(eq(S.rewards.id, id));
+    go("/admin/premios", { ok: `Este premio ya tiene ${used.n} canje(s), así que se ocultó en lugar de borrarse para no dañar el historial` });
+  }
+  await db.delete(S.rewards).where(eq(S.rewards.id, id));
+  go("/admin/premios", { ok: "Premio eliminado" });
+}
+
 /* ---------- Niveles ---------- */
 
 export async function saveLevel(fd: FormData) {
@@ -488,6 +501,19 @@ export async function saveUser(fd: FormData) {
     go("/admin/configuracion#usuarios", { error: errMsg(e) });
   }
   go("/admin/configuracion", { ok: id ? "Usuario actualizado" : "Usuario creado" });
+}
+
+/**
+ * Borra los datos de prueba (clientes, motos, compras, puntos, canjes, referidos, mensajes e importaciones)
+ * para empezar a usar el sistema con datos reales. Conserva usuarios, niveles, premios y configuración.
+ */
+export async function resetOperationalData(fd: FormData) {
+  await requireStaff(["ADMIN"]);
+  if (str(fd, "confirm").toUpperCase() !== "BORRAR TODO") {
+    go("/admin/configuracion", { error: "Para confirmar escriba exactamente: BORRAR TODO" });
+  }
+  await db.execute(sql`TRUNCATE notifications, reminder_logs, point_movements, service_records, redemptions, referrals, purchases, motorcycles, customers, import_batches CASCADE`);
+  go("/admin/configuracion", { ok: "Datos de prueba borrados. El sistema quedó listo para registrar clientes reales" });
 }
 
 /* ---------- Notificación masiva ---------- */

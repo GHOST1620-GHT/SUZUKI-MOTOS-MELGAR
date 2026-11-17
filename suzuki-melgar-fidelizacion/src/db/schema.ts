@@ -81,7 +81,7 @@ export const motorcycles = pgTable("motorcycles", {
   createdAt: ts("created_at").notNull().defaultNow(),
 });
 
-/** category: MOTO | REPUESTOS | ACCESORIOS | TALLER · source: MANUAL | IMPORTACION | API */
+/** category: MOTO | REPUESTOS | TALLER · source: MANUAL | IMPORTACION | API */
 export const purchases = pgTable(
   "purchases",
   {
@@ -116,7 +116,7 @@ export const rewards = pgTable("rewards", {
   id: id(),
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
-  /** SERVICIO | ACCESORIO | DESCUENTO | EXPERIENCIA */
+  /** SERVICIO | ACCESORIO (obsequio) | DESCUENTO | EXPERIENCIA */
   category: text("category").notNull().default("ACCESORIO"),
   pointsCost: integer("points_cost").notNull(),
   /** null = ilimitado */

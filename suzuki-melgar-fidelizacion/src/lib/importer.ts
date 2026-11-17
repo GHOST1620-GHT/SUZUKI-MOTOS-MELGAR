@@ -23,11 +23,11 @@ export type ImportRow = {
 export function guessCategory(raw: string | null | undefined, fallback: Category): Category {
   const t = (raw ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   if (!t) return fallback;
-  if (/(^|\b)(moto|motocicleta|vehiculo)s?\b/.test(t) && !/repuesto|accesorio/.test(t)) return "MOTO";
+  if (/(^|\b)(moto|motocicleta|vehiculo)s?\b/.test(t) && !/repuesto|accesorio|parte/.test(t)) return "MOTO";
   if (/taller|servicio|mano de obra|mantenimiento|revision|reparacion/.test(t)) return "TALLER";
-  if (/accesorio|casco|guante|chaqueta|impermeable|maleta|baul|lujo/.test(t)) return "ACCESORIOS";
-  if (/repuesto|parte|aceite|lubricante|llanta|filtro|kit|freno/.test(t)) return "REPUESTOS";
-  if (["MOTO", "REPUESTOS", "ACCESORIOS", "TALLER"].includes(t.toUpperCase())) return t.toUpperCase() as Category;
+  // Suzuki Melgar Moto no vende accesorios: cualquier artículo se clasifica como repuesto
+  if (/repuesto|parte|aceite|lubricante|llanta|filtro|kit|freno|accesorio|casco|guante|chaqueta|impermeable|maleta|baul|lujo/.test(t)) return "REPUESTOS";
+  if (["MOTO", "REPUESTOS", "TALLER"].includes(t.toUpperCase())) return t.toUpperCase() as Category;
   return fallback;
 }
 

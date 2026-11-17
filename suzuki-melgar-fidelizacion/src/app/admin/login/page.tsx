@@ -3,6 +3,7 @@ import { Brand } from "@/components/brand";
 import { staffLogin } from "../auth-actions";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Ingreso del personal" };
 
 export default function StaffLogin() {
@@ -44,9 +45,11 @@ export default function StaffLogin() {
             </label>
             <SubmitButton className="btn btn-primary w-full py-3" pendingText="Ingresando…">Ingresar</SubmitButton>
           </form>
-          <div className="mt-6 rounded-lg bg-slate-100 p-3 text-xs text-slate-600">
-            <b>Demo:</b> admin@suzukimelgar.com / admin123
-          </div>
+          {process.env.SHOW_DEMO_HINTS === "1" && (
+            <div className="mt-6 rounded-lg bg-slate-100 p-3 text-xs text-slate-600">
+              <b>Demo:</b> admin@suzukimelgar.com / admin123
+            </div>
+          )}
           <p className="mt-6 text-center text-sm text-slate-500">
             ¿Eres cliente? <a className="font-semibold text-brand-700 hover:underline" href="/portal/login">Ingresa al portal</a>
           </p>

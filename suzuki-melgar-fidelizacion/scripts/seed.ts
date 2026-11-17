@@ -57,7 +57,7 @@ async function main() {
       { name: "Bronce", minPoints: 0, multiplier: 1, color: "#b45309", sortOrder: 1, benefits: "Acumula puntos en todas tus compras\nBono de cumpleaños\nRecordatorios de mantenimiento" },
       { name: "Plata", minPoints: 2000, multiplier: 1.1, color: "#64748b", sortOrder: 2, benefits: "10% más puntos en cada compra\nLavada gratis en cada mantenimiento\nRevisión de 20 puntos sin costo" },
       { name: "Oro", minPoints: 5000, multiplier: 1.25, color: "#ca8a04", sortOrder: 3, benefits: "25% más puntos en cada compra\nPrioridad en agenda de taller\n5% de descuento en repuestos\nAcceso a premios exclusivos" },
-      { name: "Platino", minPoints: 10000, multiplier: 1.5, color: "#1e3a8a", sortOrder: 4, benefits: "50% más puntos en cada compra\nMantenimiento a domicilio en Melgar\n10% de descuento en accesorios\nInvitación a rodadas y eventos VIP" },
+      { name: "Platino", minPoints: 10000, multiplier: 1.5, color: "#1e3a8a", sortOrder: 4, benefits: "50% más puntos en cada compra\nMantenimiento a domicilio en Melgar\n10% de descuento en repuestos\nInvitación a rodadas y eventos VIP" },
     ])
     .returning();
   const [bronce, plata, oro] = lv;
@@ -141,7 +141,7 @@ async function main() {
         km += between(2200, 4500);
         events.push({ date: daysAgo(d), customerId: c.id, category: "TALLER", amount: between(9, 38) * 10000, motoId: moto.id, km, inv: `FV-${inv++}` });
         if (rand() > 0.45) events.push({ date: daysAgo(d), customerId: c.id, category: "REPUESTOS", amount: between(4, 45) * 10000, inv: `FV-${inv++}` });
-        if (rand() > 0.75) events.push({ date: daysAgo(Math.max(0, d - 1)), customerId: c.id, category: "ACCESORIOS", amount: between(5, 60) * 10000, inv: `FV-${inv++}` });
+        if (rand() > 0.75) events.push({ date: daysAgo(Math.max(0, d - 1)), customerId: c.id, category: "REPUESTOS", amount: between(5, 60) * 10000, inv: `FV-${inv++}` });
       }
       await db.update(S.motorcycles).set({ currentKm: km + between(300, 1800) }).where(eq(S.motorcycles.id, moto.id));
     }

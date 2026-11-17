@@ -13,7 +13,7 @@ Sistema completo de fidelización para el concesionario **Suzuki Melgar Moto**, 
 | Módulo | Qué hace |
 |---|---|
 | **Inicio (dashboard)** | KPIs (clientes, ventas del mes, puntos en circulación y pasivo, pendientes), ventas por categoría a 12 meses, distribución por nivel, mantenimientos por atender, cumpleaños de la semana, mejores clientes y actividad reciente. |
-| **Registrar compra** | Busca al cliente por cédula, nombre, celular o placa. Elige la categoría (Moto, Repuestos, Accesorios o Taller) y muestra en vivo los puntos que va a ganar (con el multiplicador del nivel). Controla facturas duplicadas. Si es un servicio de taller, actualiza el control de mantenimiento de la moto. |
+| **Registrar compra** | Busca al cliente por cédula, nombre, celular o placa. Elige la categoría (Moto, Repuestos o Taller) y muestra en vivo los puntos que va a ganar (con el multiplicador del nivel). Controla facturas duplicadas. Si es un servicio de taller, actualiza el control de mantenimiento de la moto. |
 | **Clientes** | Búsqueda, filtros por nivel y estado (activos, inactivos, sin portal), orden y exportación a Excel. La **ficha 360°** incluye: datos, puntos, progreso de nivel, motos con estado de mantenimiento, historial de puntos, compras (con anulación), canjes, servicios de taller, referidos, mensajes enviados, canje en mostrador, ajuste de puntos, acceso al portal y saldo por WhatsApp. |
 | **Motos** | Parque de motos con búsqueda por placa, VIN o propietario, y los modelos más vendidos. |
 | **Compras y puntos** | Listado con filtros (categoría, origen, fechas), totales y exportación a Excel. |
@@ -105,7 +105,9 @@ StackBlitz no soporta Turbopack, por eso se usa el compilador Webpack.
 4. **Redeploy.** El despliegue (`vercel.json` → `npm run vercel-build`) aplica las migraciones y, **solo si la base está vacía**, carga los datos de demostración.
 5. El cron diario (cumpleaños y vencimientos) queda configurado en `vercel.json` (6:00 a. m. hora Colombia).
 
-**Para pasar de demostración a uso real:** vacíe la base desde la consola SQL de Neon (`TRUNCATE notifications, reminder_logs, point_movements, service_records, redemptions, referrals, purchases, motorcycles, customers, import_batches;`), cambie las contraseñas desde **Configuración → Usuarios** y ajuste premios, niveles y reglas de puntos.
+**Para pasar de demostración a uso real:** en **Configuración → Puesta en marcha** el sistema muestra qué falta: crear el administrador real, desactivar los usuarios de prueba, configurar el WhatsApp del concesionario y **borrar los datos de prueba** (botón que pide escribir `BORRAR TODO`; conserva usuarios, niveles, premios y configuración). Como quedan usuarios en la base, los datos de ejemplo no se vuelven a cargar en los siguientes despliegues.
+
+Las pistas de acceso de prueba en las pantallas de ingreso solo se muestran si se define la variable `SHOW_DEMO_HINTS=1`.
 
 Otros hostings: cualquier servidor con Node 20+ y PostgreSQL (`npm run db:migrate && npm run build && npm start`).
 
@@ -128,7 +130,7 @@ Content-Type: application/json
 ```
 Acepta una factura o un arreglo. Las facturas repetidas se omiten y los clientes nuevos se crean solos. La respuesta trae `{ imported, skipped, newCustomers, points, errors }`.
 
-**Clasificación automática de la categoría:** "moto/motocicleta" → Moto · "taller/servicio/mano de obra" → Taller · "accesorio/casco/guante…" → Accesorios · "repuesto/aceite/llanta…" → Repuestos.
+**Clasificación automática de la categoría:** "moto/motocicleta" → Moto · "taller/servicio/mano de obra" → Taller · "repuesto/aceite/llanta…" (y cualquier otro artículo) → Repuestos.
 
 ---
 

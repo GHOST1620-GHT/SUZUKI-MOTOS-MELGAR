@@ -20,7 +20,7 @@ export default function Home() {
           </div>
           <div className="mt-16 grid w-full gap-4 sm:grid-cols-4">
             {[
-              [Gift, "Premios", "Lavadas, aceite, accesorios y experiencias"],
+              [Gift, "Premios", "Lavadas, aceite, repuestos y experiencias"],
               [Trophy, "Niveles", "Bronce, Plata, Oro y Platino con más beneficios"],
               [Wrench, "Mantenimiento", "Te avisamos cuándo le toca a tu moto"],
               [ShieldCheck, "Referidos", "Gana puntos cuando tus amigos compran"],

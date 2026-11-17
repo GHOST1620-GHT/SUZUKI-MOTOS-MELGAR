@@ -8,7 +8,7 @@ const num = (v: number) => v.toLocaleString("es-CO");
 
 const tooltipStyle = { borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "0 4px 12px rgba(0,0,0,.08)", fontSize: 12 };
 
-export function SalesChart({ data }: { data: { month: string; MOTO: number; REPUESTOS: number; ACCESORIOS: number; TALLER: number }[] }) {
+export function SalesChart({ data }: { data: { month: string; MOTO: number; REPUESTOS: number; TALLER: number }[] }) {
   return (
     <ResponsiveContainer width="100%" height={290}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -19,7 +19,6 @@ export function SalesChart({ data }: { data: { month: string; MOTO: number; REPU
         <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
         <Bar dataKey="MOTO" name="Motos" stackId="a" fill="#1a3fc0" />
         <Bar dataKey="REPUESTOS" name="Repuestos" stackId="a" fill="#0891b2" />
-        <Bar dataKey="ACCESORIOS" name="Accesorios" stackId="a" fill="#7c3aed" />
         <Bar dataKey="TALLER" name="Taller" stackId="a" fill="#ea580c" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
