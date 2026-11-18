@@ -124,6 +124,7 @@ export function ImportWizard({ action }: { action: (p: { fileName: string; rows:
           <div className="card p-5">
             <p className="font-semibold text-slate-900">Relacione las columnas del archivo</p>
             <p className="text-sm text-slate-500">Las detectamos automáticamente; revise que sean correctas.</p>
+            <p className="mt-2 rounded-lg bg-brand-50 p-3 text-xs text-brand-900">Si la columna de categoría trae el <b>modelo de la moto</b> (ej. GIXXER 150), el sistema lo usa como modelo. Las filas que traen <b>mecánico</b> se registran como servicio de <b>Taller</b>.</p>
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
               {FIELDS.map((f) => (
                 <label key={f.key} className="block">
