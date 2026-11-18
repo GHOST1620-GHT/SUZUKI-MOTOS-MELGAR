@@ -32,7 +32,7 @@ export default async function Importar() {
               <li>Arrastre el archivo arriba y verifique las columnas.</li>
               <li>Pulse <b>Importar</b>: se suman los puntos y se crean los clientes nuevos con su bono de bienvenida.</li>
             </ol>
-            <p className="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-900">Recomendación: importe a diario o semanalmente. Si la columna de categoría trae palabras como “moto”, “repuesto” o “taller/servicio”, se clasifica sola. En los servicios de taller, la columna <b>Mecánico</b> alimenta el ranking del mecánico del mes.</p>
+            <p className="mt-3 rounded-lg bg-amber-50 p-3 text-xs text-amber-900">Recomendación: importe a diario o semanalmente. Si la columna de categoría trae palabras como “moto”, “repuesto” o “taller/servicio”, se clasifica sola. Con <b>Placa</b> y <b>Modelo</b> se crea la moto si es nueva; en taller, <b>Kilometraje</b> actualiza el mantenimiento y <b>Mecánico</b> alimenta el ranking. Si sube una factura que ya existía, no suma puntos otra vez, pero completa la moto o el mecánico que le faltaba.</p>
           </Card>
           <Card title={<span className="flex items-center gap-2"><Plug className="size-4" /> Integración automática (API)</span>}>
             <p className="text-sm text-slate-600">Si el proveedor de MasControl puede enviar cada factura al momento de emitirla, use este endpoint:</p>

@@ -16,6 +16,8 @@ const FIELDS: { key: keyof ImportRow; label: string; required?: boolean; hints: 
   { key: "amount", label: "Valor total", required: true, hints: ["total", "valor", "neto", "monto", "importe"] },
   { key: "category", label: "Categoría / línea", hints: ["categoria", "linea", "grupo", "tipo", "concepto", "centro"] },
   { key: "plate", label: "Placa", hints: ["placa"] },
+  { key: "model", label: "Modelo de la moto", hints: ["modelo", "referencia"] },
+  { key: "km", label: "Kilometraje", hints: ["kilometraje", "km"] },
   { key: "mechanic", label: "Mecánico (taller)", hints: ["mecanico", "tecnico", "operario", "asesor taller"] },
 ];
 
@@ -81,11 +83,18 @@ export function ImportWizard({ action }: { action: (p: { fileName: string; rows:
             <p className="text-sm text-slate-500">{fileName}</p>
           </div>
         </div>
-        <div className="mt-5 grid gap-3 sm:grid-cols-5">
-          {[["Filas", result.total], ["Importadas", result.imported], ["Ya existían", result.skipped], ["Clientes nuevos", result.newCustomers], ["Puntos otorgados", result.points.toLocaleString("es-CO")]].map(([l, v]) => (
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[["Filas", result.total], ["Facturas nuevas", result.imported], ["Ya existían", result.skipped], ["Completadas", result.updated], ["Clientes nuevos", result.newCustomers], ["Motos nuevas", result.newMotos], ["Mecánicos nuevos", result.newMechanics], ["Puntos otorgados", result.points.toLocaleString("es-CO")]].map(([l, v]) => (
             <div key={String(l)} className="rounded-xl bg-slate-50 p-3 text-center"><p className="text-xs text-slate-500">{l}</p><p className="text-xl font-bold">{v}</p></div>
           ))}
         </div>
+        {result.updated > 0 && <p className="mt-4 rounded-xl bg-blue-50 p-3 text-sm text-blue-800"><b>Completadas:</b> facturas que ya estaban registradas y a las que se les agregó el mecánico o la moto que faltaba. No se sumaron puntos otra vez.</p>}
+        {result.warnings.length > 0 && (
+          <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">
+            <p className="font-semibold">Avisos:</p>
+            <ul className="mt-2 list-inside list-disc text-xs">{result.warnings.map((w) => <li key={w}>{w}</li>)}</ul>
+          </div>
+        )}
         {result.errors.length > 0 && (
           <div className="mt-5 rounded-xl bg-red-50 p-4 text-sm text-red-800">
             <p className="font-semibold">{result.errors.length} filas con error:</p>

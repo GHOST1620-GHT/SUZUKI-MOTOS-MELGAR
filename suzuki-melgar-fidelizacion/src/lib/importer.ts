@@ -2,7 +2,7 @@
  * Importación de facturas desde MasControl (archivo Excel/CSV o API).
  * Cada fila = una factura. Si el cliente no existe se crea automáticamente.
  */
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, schema as S } from "./db";
 import type { Category } from "./format";
 import { addMovement, LoyaltyError, makeReferralCode, registerPurchase } from "./loyalty";
@@ -21,6 +21,10 @@ export type ImportRow = {
   plate?: string | null;
   /** Nombre del mecánico (solo cuenta en servicios de taller) */
   mechanic?: string | null;
+  /** Modelo de la moto (para crearla si la placa es nueva o si es una venta de moto) */
+  model?: string | null;
+  /** Kilometraje de la moto al momento del servicio */
+  km?: number | string | null;
 };
 
 export function guessCategory(raw: string | null | undefined, fallback: Category): Category {
@@ -58,8 +62,9 @@ export function parseAmount(v: unknown) {
 
 export async function importRows(rows: ImportRow[], opts: { defaultCategory: Category; createdById?: string | null; source: "IMPORTACION" | "API"; createMissing?: boolean }) {
   const s = await getSettings();
-  const result = { total: rows.length, imported: 0, skipped: 0, newCustomers: 0, points: 0, errors: [] as string[] };
+  const result = { total: rows.length, imported: 0, skipped: 0, updated: 0, newCustomers: 0, newMotos: 0, newMechanics: 0, points: 0, errors: [] as string[], warnings: [] as string[] };
   const [firstLevel] = await db.select().from(S.levels).orderBy(S.levels.minPoints).limit(1);
+  const mechanicsBefore = (await db.select({ id: S.mechanics.id }).from(S.mechanics)).length;
 
   for (const [i, r] of rows.entries()) {
     const line = `Fila ${i + 2}`;
@@ -71,13 +76,18 @@ export async function importRows(rows: ImportRow[], opts: { defaultCategory: Cat
       if (!document) throw new LoyaltyError("sin cédula/NIT del cliente");
       if (amount <= 0) throw new LoyaltyError("valor inválido");
 
+      const category = guessCategory(r.category, opts.defaultCategory);
+      const when = parseDate(r.date) ?? new Date();
+      const plate = String(r.plate ?? "").toUpperCase().replace(/[\s-]/g, "") || null;
+      const model = String(r.model ?? "").trim() || null;
+      const km = r.km === null || r.km === undefined || r.km === "" ? null : Math.round(parseAmount(r.km)) || null;
+      const phone = String(r.phone ?? "").replace(/\D/g, "");
       const dup = await db.query.purchases.findFirst({ where: eq(S.purchases.invoiceNumber, invoice) });
-      if (dup) {
-        result.skipped++;
-        continue;
-      }
 
-      let customer = await db.query.customers.findFirst({ where: eq(S.customers.document, document) });
+      // Cliente: el de la factura ya registrada, o búsqueda por cédula (se crea si no existe)
+      let customer = dup
+        ? await db.query.customers.findFirst({ where: eq(S.customers.id, dup.customerId) })
+        : await db.query.customers.findFirst({ where: eq(S.customers.document, document) });
       if (!customer) {
         if (opts.createMissing === false) throw new LoyaltyError(`cliente ${document} no existe`);
         const parts = String(r.name ?? "Cliente").trim().split(/\s+/);
@@ -86,30 +96,65 @@ export async function importRows(rows: ImportRow[], opts: { defaultCategory: Cat
         customer = await db.transaction(async (tx) => {
           const [c] = await tx
             .insert(S.customers)
-            .values({ document, firstName: toTitle(firstName), lastName: toTitle(lastName), phone: String(r.phone ?? "").replace(/\D/g, ""), email: r.email || null, referralCode: makeReferralCode(firstName), levelId: firstLevel?.id })
+            .values({ document, firstName: toTitle(firstName), lastName: toTitle(lastName), phone, email: r.email || null, referralCode: makeReferralCode(firstName), levelId: firstLevel?.id })
             .returning();
           if (s.welcomeBonus > 0) await addMovement(tx, { customerId: c.id, type: "BIENVENIDA", points: s.welcomeBonus, description: "Bono de bienvenida al programa" });
           return c;
         });
         result.newCustomers++;
+      } else if ((!customer.phone && phone) || (!customer.email && r.email)) {
+        // Completa datos de contacto que faltaban
+        await db.update(S.customers).set({ ...(!customer.phone && phone ? { phone } : {}), ...(!customer.email && r.email ? { email: String(r.email) } : {}) }).where(eq(S.customers.id, customer.id));
       }
 
-      let motorcycleId: string | null = null;
-      if (r.plate) {
-        const m = await db.query.motorcycles.findFirst({ where: eq(S.motorcycles.plate, String(r.plate).toUpperCase().replace(/\s/g, "")) });
-        if (m && m.customerId === customer.id) motorcycleId = m.id;
+      // Moto: por placa (se crea si es nueva) o, en una venta de moto sin placa, por modelo
+      let motorcycleId: string | null = dup?.motorcycleId ?? null;
+      if (!motorcycleId && (plate || (category === "MOTO" && model))) {
+        const existing = plate ? await db.query.motorcycles.findFirst({ where: eq(S.motorcycles.plate, plate) }) : null;
+        if (existing && existing.customerId !== customer.id) {
+          result.warnings.push(`${line}: la placa ${plate} pertenece a otro cliente; no se asoció la moto`);
+        } else if (existing) {
+          motorcycleId = existing.id;
+        } else {
+          const [m] = await db
+            .insert(S.motorcycles)
+            .values({ customerId: customer.id, model: model ?? "Por definir", plate, purchaseDate: category === "MOTO" ? when : null, currentKm: km ?? 0 })
+            .returning();
+          motorcycleId = m.id;
+          result.newMotos++;
+        }
       }
 
-      const category = guessCategory(r.category, opts.defaultCategory);
+      // Si la moto se había creado sin modelo, completa el modelo
+      if (motorcycleId && model) {
+        await db.update(S.motorcycles).set({ model }).where(and(eq(S.motorcycles.id, motorcycleId), eq(S.motorcycles.model, "Por definir")));
+      }
+
       const mechanicId = category === "TALLER" ? await resolveMechanic(r.mechanic) : null;
+
+      if (dup) {
+        // Factura ya registrada: no suma puntos otra vez, solo completa lo que faltaba
+        const patch: { mechanicId?: string; motorcycleId?: string } = {};
+        if (!dup.mechanicId && mechanicId && dup.category === "TALLER") patch.mechanicId = mechanicId;
+        if (!dup.motorcycleId && motorcycleId) patch.motorcycleId = motorcycleId;
+        if (Object.keys(patch).length) {
+          await db.update(S.purchases).set(patch).where(eq(S.purchases.id, dup.id));
+          result.updated++;
+        } else {
+          result.skipped++;
+        }
+        continue;
+      }
+
       const res = await registerPurchase({
         customerId: customer.id,
         category,
         mechanicId,
         amount,
-        date: parseDate(r.date) ?? new Date(),
+        date: when,
         invoiceNumber: invoice,
         motorcycleId,
+        serviceKm: category === "TALLER" ? km : null,
         source: opts.source,
         createdById: opts.createdById,
         settings: s,
@@ -120,6 +165,7 @@ export async function importRows(rows: ImportRow[], opts: { defaultCategory: Cat
       result.errors.push(`${line}: ${e instanceof LoyaltyError ? e.message : String((e as Error).message ?? e)}`);
     }
   }
+  result.newMechanics = (await db.select({ id: S.mechanics.id }).from(S.mechanics)).length - mechanicsBefore;
   return result;
 }
 

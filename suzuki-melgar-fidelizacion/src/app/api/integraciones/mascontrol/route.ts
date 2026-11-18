@@ -20,6 +20,8 @@ function toRow(b: Incoming): ImportRow {
     category: (g("categoria", "linea", "category") as string) ?? null,
     plate: (g("placa", "plate") as string) ?? null,
     mechanic: (g("mecanico", "mecánico", "tecnico", "mechanic") as string) ?? null,
+    model: (g("modelo", "model", "referencia") as string) ?? null,
+    km: (g("kilometraje", "km") as number) ?? null,
   };
 }
 

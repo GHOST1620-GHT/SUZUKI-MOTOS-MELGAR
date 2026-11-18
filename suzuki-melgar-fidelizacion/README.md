@@ -117,7 +117,7 @@ Otros hostings: cualquier servidor con Node 20+ y PostgreSQL (`npm run db:migrat
 MasControl no publica una API abierta, así que el sistema ofrece dos caminos:
 
 **A. Importación de archivo (funciona desde el primer día)**
-En MasControl exporte el informe de ventas por factura a Excel y súbalo en **Importar MasControl**. Debe incluir número de factura, cédula/NIT, nombre, valor total y fecha. Opcionalmente puede traer celular, correo, categoría/línea, placa y **mecánico** (solo cuenta en servicios de taller; si el nombre no existe, el mecánico se crea solo). Hay una plantilla en `/plantilla-mascontrol.csv`.
+En MasControl exporte el informe de ventas por factura a Excel y súbalo en **Importar MasControl**. Debe incluir número de factura, cédula/NIT, nombre, valor total y fecha. Opcionalmente puede traer celular, correo, categoría/línea, placa, **modelo**, **kilometraje** y **mecánico**. Si la placa es nueva, la moto se crea a nombre del cliente; el kilometraje de un servicio de taller actualiza el control de mantenimiento; el mecánico solo cuenta en servicios de taller y, si el nombre no existe, se crea solo. Si una factura ya estaba registrada, no suma puntos otra vez, pero se completa la moto o el mecánico que le faltaba. Hay una plantilla en `/plantilla-mascontrol.csv`.
 
 **B. Webhook en tiempo real (si el proveedor de MasControl lo habilita)**
 ```http
