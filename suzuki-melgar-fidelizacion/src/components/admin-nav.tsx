@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  BarChart3, Bike, Cog, FileUp, Gift, LayoutDashboard, LogOut, Menu, PlusCircle, Receipt, Settings2, Ticket, Trophy, UserPlus, Users, Wrench, X,
+  BarChart3, Bike, Cog, HardHat, FileUp, Gift, LayoutDashboard, LogOut, Menu, PlusCircle, Receipt, Settings2, Ticket, Trophy, UserPlus, Users, Wrench, X,
 } from "lucide-react";
 import { Brand } from "./brand";
 
@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/motos", label: "Motos", icon: Bike, roles: ["ADMIN", "ASESOR", "TALLER"] },
   { href: "/admin/compras", label: "Compras y puntos", icon: Receipt, roles: ["ADMIN", "ASESOR", "TALLER"] },
   { href: "/admin/mantenimientos", label: "Mantenimientos", icon: Wrench, roles: ["ADMIN", "ASESOR", "TALLER"], badge: "maint" },
+  { href: "/admin/mecanicos", label: "Mecánicos", icon: HardHat, roles: ["ADMIN", "ASESOR", "TALLER"] },
   { href: "/admin/canjes", label: "Canjes", icon: Ticket, roles: ["ADMIN", "ASESOR", "TALLER"], badge: "redeem" },
   { href: "/admin/referidos", label: "Referidos", icon: UserPlus, roles: ["ADMIN", "ASESOR"], badge: "refs" },
   { section: "Programa" },

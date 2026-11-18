@@ -35,7 +35,7 @@ async function main() {
     }
   }
   console.log("Limpiando base de datos…");
-  await db.execute(sql`TRUNCATE notifications, reminder_logs, point_movements, service_records, redemptions, referrals, purchases, motorcycles, customers, rewards, levels, import_batches, users, settings CASCADE`);
+  await db.execute(sql`TRUNCATE mechanics, notifications, reminder_logs, point_movements, service_records, redemptions, referrals, purchases, motorcycles, customers, rewards, levels, import_batches, users, settings CASCADE`);
 
   const hash = (p: string) => bcrypt.hashSync(p, 8);
   const [admin, asesor, taller] = await db
@@ -79,6 +79,9 @@ async function main() {
       { name: "Curso de manejo seguro", category: "EXPERIENCIA", pointsCost: 2800, emoji: "🎓", description: "Curso práctico de 4 horas con instructor certificado.", stock: 20 },
     ])
     .returning();
+
+  const mechs = await db.insert(S.mechanics).values([{ name: "Jhon Ramírez" }, { name: "Edwin Cárdenas" }, { name: "Luis Fernando Ortiz" }, { name: "Andrés Murillo" }]).returning();
+  const mechWeights = [mechs[0], mechs[0], mechs[0], mechs[1], mechs[1], mechs[1], mechs[2], mechs[2], mechs[3]];
 
   console.log("Creando clientes, motos y compras…");
   type Ev = { date: Date; customerId: string; category: Category; amount: number; motoId?: string; km?: number; inv: string };
@@ -157,6 +160,7 @@ async function main() {
       date: e.date,
       invoiceNumber: e.inv,
       motorcycleId: e.motoId,
+      mechanicId: e.category === "TALLER" ? pick(mechWeights).id : null,
       serviceKm: e.km,
       source: rand() > 0.5 ? "IMPORTACION" : "MANUAL",
       createdById: pick(staff).id,

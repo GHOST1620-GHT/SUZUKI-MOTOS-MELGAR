@@ -23,6 +23,7 @@ Sistema completo de fidelización para el concesionario **Suzuki Melgar Moto**, 
 | **Catálogo de premios** | Premios con stock, categoría, nivel mínimo, imagen o emoji, y opción de activar u ocultar. |
 | **Niveles** | Bronce, Plata, Oro y Platino, configurables: umbral, multiplicador, color y beneficios. Al cambiarlos se recalcula el nivel de todos los clientes. |
 | **Importar MasControl** | Arrastra el Excel o CSV exportado de MasControl. Las columnas se detectan solas y hay vista previa. Crea los clientes nuevos, omite las facturas ya registradas y clasifica la categoría por palabras clave. Guarda un historial de cada importación. |
+| **Mecánicos** | Lista de mecánicos del taller, **mecánico del mes**, ranking por servicios o valor facturado (hoy, semana, mes, año o rango), gráficas y tabla de posiciones. Solo cuentan los servicios de taller. |
 | **Reportes** | Tasa de recompra, tasa de canje, pasivo, ventas y puntos por mes, participación por categoría, premios más canjeados, comparativo por nivel, productividad por usuario y **clientes para reactivar** con botón de WhatsApp. |
 | **Configuración** | Reglas de puntos por categoría, bonos (bienvenida, referido, cumpleaños), vencimiento, días de inactividad, datos del negocio, **usuarios y roles**, notificaciones masivas y ejecución manual de las tareas automáticas. |
 
@@ -116,7 +117,7 @@ Otros hostings: cualquier servidor con Node 20+ y PostgreSQL (`npm run db:migrat
 MasControl no publica una API abierta, así que el sistema ofrece dos caminos:
 
 **A. Importación de archivo (funciona desde el primer día)**
-En MasControl exporte el informe de ventas por factura a Excel y súbalo en **Importar MasControl**. Debe incluir número de factura, cédula/NIT, nombre, valor total y fecha. Opcionalmente puede traer celular, correo, categoría/línea y placa. Hay una plantilla en `/plantilla-mascontrol.csv`.
+En MasControl exporte el informe de ventas por factura a Excel y súbalo en **Importar MasControl**. Debe incluir número de factura, cédula/NIT, nombre, valor total y fecha. Opcionalmente puede traer celular, correo, categoría/línea, placa y **mecánico** (solo cuenta en servicios de taller; si el nombre no existe, el mecánico se crea solo). Hay una plantilla en `/plantilla-mascontrol.csv`.
 
 **B. Webhook en tiempo real (si el proveedor de MasControl lo habilita)**
 ```http
@@ -126,7 +127,7 @@ Content-Type: application/json
 
 { "factura": "FV-10234", "fecha": "2026-11-10", "cedula": "1234567890",
   "nombre": "Andrés Rodríguez", "celular": "3001234567", "total": 350000,
-  "categoria": "Repuestos", "placa": "ABC12D" }
+  "categoria": "Taller", "placa": "ABC12D", "mecanico": "Jhon Ramírez" }
 ```
 Acepta una factura o un arreglo. Las facturas repetidas se omiten y los clientes nuevos se crean solos. La respuesta trae `{ imported, skipped, newCustomers, points, errors }`.
 

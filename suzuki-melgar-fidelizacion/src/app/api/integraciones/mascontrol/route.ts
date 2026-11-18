@@ -19,6 +19,7 @@ function toRow(b: Incoming): ImportRow {
     amount: (g("total", "valor", "amount") as number) ?? 0,
     category: (g("categoria", "linea", "category") as string) ?? null,
     plate: (g("placa", "plate") as string) ?? null,
+    mechanic: (g("mecanico", "mecánico", "tecnico", "mechanic") as string) ?? null,
   };
 }
 

@@ -62,6 +62,14 @@ export const customers = pgTable(
   (t) => [index("customers_last_name_idx").on(t.lastName), index("customers_phone_idx").on(t.phone)],
 );
 
+/** Mecánicos del taller (para el ranking del mecánico del mes) */
+export const mechanics = pgTable("mechanics", {
+  id: id(),
+  name: text("name").notNull().unique(),
+  active: boolean("active").notNull().default(true),
+  createdAt: ts("created_at").notNull().defaultNow(),
+});
+
 export const motorcycles = pgTable("motorcycles", {
   id: id(),
   customerId: text("customer_id").notNull().references(() => customers.id, { onDelete: "cascade" }),
@@ -88,6 +96,8 @@ export const purchases = pgTable(
     id: id(),
     customerId: text("customer_id").notNull().references(() => customers.id, { onDelete: "cascade" }),
     motorcycleId: text("motorcycle_id").references(() => motorcycles.id, { onDelete: "set null" }),
+    /** Mecánico que hizo el trabajo (solo compras de TALLER) */
+    mechanicId: text("mechanic_id").references(() => mechanics.id, { onDelete: "set null" }),
     invoiceNumber: text("invoice_number").unique(),
     category: text("category").notNull(),
     amount: doublePrecision("amount").notNull(),
@@ -98,7 +108,7 @@ export const purchases = pgTable(
     createdById: text("created_by_id").references(() => users.id),
     createdAt: ts("created_at").notNull().defaultNow(),
   },
-  (t) => [index("purchases_date_idx").on(t.date), index("purchases_customer_idx").on(t.customerId)],
+  (t) => [index("purchases_date_idx").on(t.date), index("purchases_customer_idx").on(t.customerId), index("purchases_mechanic_idx").on(t.mechanicId)],
 );
 
 export const serviceRecords = pgTable("service_records", {
@@ -242,7 +252,10 @@ export const serviceRecordsRelations = relations(serviceRecords, ({ one }) => ({
   createdBy: one(users, { fields: [serviceRecords.createdById], references: [users.id] }),
 }));
 
+export const mechanicsRelations = relations(mechanics, ({ many }) => ({ purchases: many(purchases) }));
+
 export const purchasesRelations = relations(purchases, ({ one }) => ({
+  mechanic: one(mechanics, { fields: [purchases.mechanicId], references: [mechanics.id] }),
   customer: one(customers, { fields: [purchases.customerId], references: [customers.id] }),
   motorcycle: one(motorcycles, { fields: [purchases.motorcycleId], references: [motorcycles.id] }),
   createdBy: one(users, { fields: [purchases.createdById], references: [users.id] }),
@@ -288,3 +301,4 @@ export type Motorcycle = typeof motorcycles.$inferSelect;
 export type Level = typeof levels.$inferSelect;
 export type Reward = typeof rewards.$inferSelect;
 export type User = typeof users.$inferSelect;
+export type Mechanic = typeof mechanics.$inferSelect;

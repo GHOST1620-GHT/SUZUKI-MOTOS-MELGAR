@@ -7,6 +7,7 @@ import { db, schema as S } from "@/lib/db";
 import { CATEGORIES, date, dateTime, money, MOVEMENT_TYPES, pts, REDEMPTION_STATUS, REFERRAL_STATUS, relative, type Category } from "@/lib/format";
 import { getLevelProgress, maintenanceStatus } from "@/lib/loyalty";
 import { getSettings } from "@/lib/settings";
+import { activeMechanics } from "@/lib/mechanics";
 import { templates, waLink } from "@/lib/whatsapp";
 import { CopyButton, Modal, SubmitButton, WhatsAppButton } from "@/components/client";
 import { CustomerFields } from "@/components/customer-form";
@@ -28,6 +29,7 @@ export default async function ClienteDetalle({ params, searchParams }: { params:
   const { id } = await params;
   const { tab = "movimientos" } = await searchParams;
   const s = await getSettings();
+  const mechanics = await activeMechanics();
   const c = await db.query.customers.findFirst({
     where: eq(S.customers.id, id),
     with: {
@@ -230,7 +232,7 @@ export default async function ClienteDetalle({ params, searchParams }: { params:
                         <span className="text-xs">{date(st.dueDate)}</span>
                       </div>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Modal title="Registrar servicio de taller" trigger={<><Wrench className="size-3.5" /> Registrar servicio</>} triggerClassName="btn btn-primary btn-sm"><ServiceForm moto={m} back={back} /></Modal>
+                        <Modal title="Registrar servicio de taller" trigger={<><Wrench className="size-3.5" /> Registrar servicio</>} triggerClassName="btn btn-primary btn-sm"><ServiceForm moto={m} back={back} mechanics={mechanics} /></Modal>
                         <WhatsAppButton href={waLink(c.phone, msg)} onSend={logReminder.bind(null, { customerId: c.id, motorcycleId: m.id, kind: "MANTENIMIENTO", message: msg })}>Recordar</WhatsAppButton>
                         <Modal title="Editar moto" trigger={<Settings2 className="size-3.5" />} triggerClassName="btn btn-ghost btn-sm" size="lg">
                           <MotoForm customerId={c.id} moto={m} />

@@ -11,6 +11,7 @@ import {
   addMovement, LoyaltyError, makeReferralCode, notify, payReferral, recalcLevel, redeemReward, registerPurchase, runDailyJobs, setRedemptionStatus,
 } from "@/lib/loyalty";
 import { getSettings, saveSettings, DEFAULT_SETTINGS } from "@/lib/settings";
+import { titleCase } from "@/lib/mechanics";
 
 const S = schema;
 
@@ -34,8 +35,9 @@ function go(path: string, msg: { ok?: string; error?: string }): never {
 }
 function errMsg(e: unknown) {
   if (e instanceof LoyaltyError) return e.message;
-  const m = String((e as Error)?.message ?? e);
-  if (m.includes("unique") || m.includes("duplicate")) return "Ya existe un registro con ese dato único (cédula, placa, correo o factura).";
+  const err = e as { message?: string; code?: string; cause?: { message?: string; code?: string } };
+  const m = `${err?.message ?? e} ${err?.cause?.message ?? ""}`;
+  if (err?.code === "23505" || err?.cause?.code === "23505" || m.includes("unique") || m.includes("duplicate")) return "Ya existe un registro con ese dato único (cédula, placa, correo o factura).";
   console.error(e);
   return "Ocurrió un error inesperado. Intente de nuevo.";
 }
@@ -221,6 +223,7 @@ export async function registerService(fd: FormData) {
         invoiceNumber: opt(fd, "invoiceNumber"),
         motorcycleId: moto.id,
         serviceKm: km,
+        mechanicId: opt(fd, "mechanicId"),
         serviceType: str(fd, "type"),
         notes: opt(fd, "notes"),
         createdById: user.id,
@@ -274,6 +277,7 @@ export async function createPurchase(fd: FormData) {
       date: dateOf(fd, "date") ?? new Date(),
       invoiceNumber: opt(fd, "invoiceNumber"),
       motorcycleId: opt(fd, "motorcycleId"),
+      mechanicId: opt(fd, "mechanicId"),
       serviceKm: int(fd, "serviceKm"),
       serviceType: opt(fd, "serviceType"),
       notes: opt(fd, "notes"),
@@ -390,6 +394,25 @@ export async function deleteReward(fd: FormData) {
   }
   await db.delete(S.rewards).where(eq(S.rewards.id, id));
   go("/admin/premios", { ok: "Premio eliminado" });
+}
+
+/* ---------- Mecánicos ---------- */
+
+export async function saveMechanic(fd: FormData) {
+  await requireStaff(["ADMIN", "TALLER"]);
+  const id = str(fd, "id");
+  const name = titleCase(str(fd, "name"));
+  try {
+    if (!name) throw new LoyaltyError("Escriba el nombre del mecánico.");
+    const n = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const dup = (await db.select().from(S.mechanics)).find((m) => m.id !== id && n(m.name) === n(name));
+    if (dup) throw new LoyaltyError(`Ya existe un mecánico llamado ${dup.name}.`);
+    if (id) await db.update(S.mechanics).set({ name, active: fd.get("active") === "on" }).where(eq(S.mechanics.id, id));
+    else await db.insert(S.mechanics).values({ name });
+  } catch (e) {
+    go("/admin/mecanicos", { error: errMsg(e).replace("cédula, placa, correo o factura", "nombre") });
+  }
+  go("/admin/mecanicos", { ok: id ? "Mecánico actualizado" : "Mecánico agregado" });
 }
 
 /* ---------- Niveles ---------- */

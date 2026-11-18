@@ -121,6 +121,8 @@ export async function registerPurchase(input: {
   date?: Date;
   invoiceNumber?: string | null;
   motorcycleId?: string | null;
+  /** Mecánico que hizo el trabajo; solo se guarda en compras de TALLER */
+  mechanicId?: string | null;
   serviceKm?: number | null;
   serviceType?: string | null;
   notes?: string | null;
@@ -152,6 +154,7 @@ export async function registerPurchase(input: {
         date: when,
         invoiceNumber: input.invoiceNumber || null,
         motorcycleId: input.motorcycleId || null,
+        mechanicId: input.category === "TALLER" ? input.mechanicId || null : null,
         notes: input.notes || null,
         source: input.source ?? "MANUAL",
         createdById: input.createdById ?? null,

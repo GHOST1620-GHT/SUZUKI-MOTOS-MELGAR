@@ -8,7 +8,8 @@ import { getSettings } from "@/lib/settings";
 import { MoneyInput, PointsPreview, ShowWhenCategory, SubmitButton } from "@/components/client";
 import { CustomerPicker } from "@/components/customer-picker";
 import { ModelList } from "@/components/customer-form";
-import { SERVICE_TYPES } from "@/components/forms";
+import { MechanicSelect, SERVICE_TYPES } from "@/components/forms";
+import { activeMechanics } from "@/lib/mechanics";
 import { Avatar, Card, Field, LevelBadge, PageHeader } from "@/components/ui";
 import { createPurchase } from "../../../actions";
 
@@ -18,6 +19,7 @@ export default async function NuevaCompra({ searchParams }: { searchParams: Prom
   const user = await requireStaff();
   const { cliente } = await searchParams;
   const s = await getSettings();
+  const mechanics = await activeMechanics();
   const c = cliente ? await db.query.customers.findFirst({ where: eq(S.customers.id, cliente), with: { level: true, motorcycles: true } }) : null;
   const rates = Object.fromEntries((Object.keys(CATEGORIES) as (keyof typeof CATEGORIES)[]).map((k) => [k, pesosPerPoint(k, s)]));
   const defaultCat = user.role === "TALLER" ? "TALLER" : "REPUESTOS";
@@ -82,6 +84,7 @@ export default async function NuevaCompra({ searchParams }: { searchParams: Prom
                   <p className="text-sm font-semibold text-orange-800 sm:col-span-2">🔧 Datos del servicio (actualiza el control de mantenimiento)</p>
                   <Field label="Tipo de servicio"><select name="serviceType" className="input">{SERVICE_TYPES.map((t) => <option key={t}>{t}</option>)}</select></Field>
                   <Field label="Kilometraje al ingreso"><input name="serviceKm" inputMode="numeric" className="input" placeholder="Ej: 6.200" /></Field>
+                  <div className="sm:col-span-2"><MechanicSelect mechanics={mechanics} /></div>
                 </div>
               </ShowWhenCategory>
               <ShowWhenCategory value="MOTO">

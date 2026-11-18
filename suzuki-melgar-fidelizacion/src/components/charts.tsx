@@ -68,11 +68,49 @@ export function HBarChart({ data, money = false, color = "#1a3fc0" }: { data: { 
     <ResponsiveContainer width="100%" height={Math.max(160, data.length * 38)}>
       <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-        <XAxis type="number" tickFormatter={money ? cop : num} tickLine={false} axisLine={false} fontSize={12} stroke="#64748b" />
+        <XAxis type="number" allowDecimals={money} tickFormatter={money ? cop : num} tickLine={false} axisLine={false} fontSize={12} stroke="#64748b" />
         <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} fontSize={12} stroke="#334155" width={130} />
         <Tooltip formatter={(v) => (money ? full(Number(v)) : num(Number(v)))} contentStyle={tooltipStyle} cursor={{ fill: "#f1f5f9" }} />
         <Bar dataKey="value" fill={color} radius={[0, 6, 6, 0]} barSize={22} />
       </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+const SERIES_COLORS = ["#1a3fc0", "#e30613", "#0891b2", "#ea580c", "#7c3aed", "#059669", "#ca8a04", "#db2777"];
+
+/** Barras apiladas por período: cada color es una serie (p. ej. un mecánico); la altura total es el total del período. */
+export function StackedBarChart({ data, series, money = false }: { data: Record<string, string | number>[]; series: string[]; money?: boolean }) {
+  return (
+    <ResponsiveContainer width="100%" height={280}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+        <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={11} stroke="#64748b" interval="preserveStartEnd" minTickGap={8} />
+        <YAxis allowDecimals={false} tickFormatter={money ? cop : num} tickLine={false} axisLine={false} fontSize={12} stroke="#64748b" width={56} />
+        <Tooltip formatter={(v) => (money ? full(Number(v)) : `${num(Number(v))} servicios`)} contentStyle={tooltipStyle} cursor={{ fill: "#f1f5f9" }} />
+        <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+        {series.map((s, i) => (
+          <Bar key={s} dataKey={s} stackId="a" fill={SERIES_COLORS[i % SERIES_COLORS.length]} radius={i === series.length - 1 ? [4, 4, 0, 0] : 0} maxBarSize={36} />
+        ))}
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+/** Una línea por serie (p. ej. un mecánico) a lo largo del tiempo. */
+export function MultiLineChart({ data, series, money = false }: { data: Record<string, string | number>[]; series: string[]; money?: boolean }) {
+  return (
+    <ResponsiveContainer width="100%" height={280}>
+      <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+        <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} stroke="#64748b" />
+        <YAxis allowDecimals={false} tickFormatter={money ? cop : num} tickLine={false} axisLine={false} fontSize={12} stroke="#64748b" width={56} />
+        <Tooltip formatter={(v) => (money ? full(Number(v)) : `${num(Number(v))} servicios`)} contentStyle={tooltipStyle} />
+        <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
+        {series.map((s, i) => (
+          <Line key={s} type="monotone" dataKey={s} stroke={SERIES_COLORS[i % SERIES_COLORS.length]} strokeWidth={2.5} dot={{ r: 3 }} />
+        ))}
+      </LineChart>
     </ResponsiveContainer>
   );
 }

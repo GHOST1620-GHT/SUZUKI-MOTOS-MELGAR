@@ -16,6 +16,7 @@ const FIELDS: { key: keyof ImportRow; label: string; required?: boolean; hints: 
   { key: "amount", label: "Valor total", required: true, hints: ["total", "valor", "neto", "monto", "importe"] },
   { key: "category", label: "Categoría / línea", hints: ["categoria", "linea", "grupo", "tipo", "concepto", "centro"] },
   { key: "plate", label: "Placa", hints: ["placa"] },
+  { key: "mechanic", label: "Mecánico (taller)", hints: ["mecanico", "tecnico", "operario", "asesor taller"] },
 ];
 
 const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();

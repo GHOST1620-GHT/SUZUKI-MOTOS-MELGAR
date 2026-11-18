@@ -6,6 +6,7 @@ import { db, schema as S } from "@/lib/db";
 import { date, dateTime, pts, relative } from "@/lib/format";
 import { maintenanceStatus } from "@/lib/loyalty";
 import { getSettings } from "@/lib/settings";
+import { activeMechanics } from "@/lib/mechanics";
 import { templates, waLink } from "@/lib/whatsapp";
 import { Modal, SubmitButton, WhatsAppButton } from "@/components/client";
 import { ServiceForm } from "@/components/forms";
@@ -18,6 +19,7 @@ export default async function Mantenimientos({ searchParams }: { searchParams: P
   await requireStaff();
   const { f = "atender" } = await searchParams;
   const s = await getSettings();
+  const mechanics = await activeMechanics();
   const motos = await db.query.motorcycles.findMany({
     with: { customer: true, services: { orderBy: desc(S.serviceRecords.date), limit: 1 } },
   });
@@ -84,7 +86,7 @@ export default async function Mantenimientos({ searchParams }: { searchParams: P
                         <td>
                           <div className="flex justify-end gap-1.5">
                             <WhatsAppButton href={waLink(m.customer.phone, msg)} onSend={logReminder.bind(null, { customerId: m.customerId, motorcycleId: m.id, kind: "MANTENIMIENTO", message: msg })}>Avisar</WhatsAppButton>
-                            <Modal title="Registrar servicio de taller" trigger={<Wrench className="size-3.5" />} triggerClassName="btn btn-primary btn-sm"><ServiceForm moto={m} back={`/admin/mantenimientos?f=${f}`} /></Modal>
+                            <Modal title="Registrar servicio de taller" trigger={<Wrench className="size-3.5" />} triggerClassName="btn btn-primary btn-sm"><ServiceForm moto={m} back={`/admin/mantenimientos?f=${f}`} mechanics={mechanics} /></Modal>
                           </div>
                         </td>
                       </tr>

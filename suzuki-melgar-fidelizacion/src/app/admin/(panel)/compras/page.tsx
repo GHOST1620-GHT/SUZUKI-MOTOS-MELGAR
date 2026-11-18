@@ -28,10 +28,11 @@ export default async function Compras({ searchParams }: { searchParams: Promise<
   const [[tot], rows] = await Promise.all([
     db.select({ n: count(), amount: sum(S.purchases.amount), points: sum(S.purchases.pointsEarned) }).from(S.purchases).innerJoin(S.customers, eq(S.customers.id, S.purchases.customerId)).where(w),
     db
-      .select({ p: S.purchases, c: { id: S.customers.id, firstName: S.customers.firstName, lastName: S.customers.lastName, document: S.customers.document }, u: { name: S.users.name } })
+      .select({ p: S.purchases, c: { id: S.customers.id, firstName: S.customers.firstName, lastName: S.customers.lastName, document: S.customers.document }, u: { name: S.users.name }, mech: { name: S.mechanics.name } })
       .from(S.purchases)
       .innerJoin(S.customers, eq(S.customers.id, S.purchases.customerId))
       .leftJoin(S.users, eq(S.users.id, S.purchases.createdById))
+      .leftJoin(S.mechanics, eq(S.mechanics.id, S.purchases.mechanicId))
       .where(w)
       .orderBy(desc(S.purchases.date))
       .limit(PER)
@@ -84,12 +85,12 @@ export default async function Compras({ searchParams }: { searchParams: Promise<
             <table className="table">
               <thead><tr><th>Fecha</th><th>Factura</th><th>Cliente</th><th>Categoría</th><th className="text-right">Valor</th><th className="text-right">Puntos</th><th>Origen</th><th>Registró</th></tr></thead>
               <tbody>
-                {rows.map(({ p, c, u }) => (
+                {rows.map(({ p, c, u, mech }) => (
                   <tr key={p.id}>
                     <td className="whitespace-nowrap text-slate-500">{date(p.date)}</td>
                     <td className="font-mono text-xs">{p.invoiceNumber ?? "—"}</td>
                     <td><Link href={`/admin/clientes/${c.id}`} className="font-medium text-slate-800 hover:text-brand-700">{c.firstName} {c.lastName}</Link><span className="block text-xs text-slate-400">CC {c.document}</span></td>
-                    <td><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full" style={{ background: CATEGORIES[p.category as Category]?.color }} />{CATEGORIES[p.category as Category]?.label}</span></td>
+                    <td><span className="inline-flex items-center gap-1.5"><span className="size-2 rounded-full" style={{ background: CATEGORIES[p.category as Category]?.color }} />{CATEGORIES[p.category as Category]?.label}</span>{mech?.name && <span className="block text-xs text-slate-400">🔧 {mech.name}</span>}</td>
                     <td className="text-right tabular-nums">{money(p.amount)}</td>
                     <td className="text-right"><Points value={p.pointsEarned} /></td>
                     <td><Badge tone={p.source === "MANUAL" ? "gray" : "blue"}>{p.source === "IMPORTACION" ? "MasControl" : p.source === "API" ? "API" : "Manual"}</Badge></td>

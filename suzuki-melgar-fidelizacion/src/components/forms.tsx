@@ -1,4 +1,4 @@
-import type { Motorcycle } from "@/db/schema";
+import type { Mechanic, Motorcycle } from "@/db/schema";
 import { toInputDate } from "@/lib/format";
 import { registerService, saveMotorcycle } from "@/app/admin/actions";
 import { MoneyInput, SubmitButton } from "./client";
@@ -7,7 +7,18 @@ import { Field } from "./ui";
 
 export const SERVICE_TYPES = ["Mantenimiento preventivo", "Cambio de aceite", "Revisión de garantía", "Sincronización", "Frenos", "Kit de arrastre", "Sistema eléctrico", "Llantas", "Reparación general", "Alistamiento / entrega"];
 
-export function ServiceForm({ moto, back }: { moto: Motorcycle; back: string }) {
+export function MechanicSelect({ mechanics }: { mechanics: Mechanic[] }) {
+  return (
+    <Field label="Mecánico que hizo el trabajo" hint={mechanics.length ? "Cuenta para el ranking del mecánico del mes" : "Aún no hay mecánicos: agréguelos en el menú Mecánicos"}>
+      <select name="mechanicId" className="input" defaultValue="">
+        <option value="">— Sin asignar —</option>
+        {mechanics.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+      </select>
+    </Field>
+  );
+}
+
+export function ServiceForm({ moto, back, mechanics = [] }: { moto: Motorcycle; back: string; mechanics?: Mechanic[] }) {
   return (
     <form action={registerService} className="space-y-4">
       <input type="hidden" name="motorcycleId" value={moto.id} />
@@ -22,6 +33,7 @@ export function ServiceForm({ moto, back }: { moto: Motorcycle; back: string }) 
         <Field label="Kilometraje actual *"><input name="km" required className="input" inputMode="numeric" defaultValue={moto.currentKm || ""} /></Field>
         <Field label="Fecha"><input name="date" type="date" className="input" defaultValue={toInputDate(new Date())} /></Field>
         <Field label="Factura MasControl"><input name="invoiceNumber" className="input" placeholder="FV-0000" /></Field>
+        <div className="sm:col-span-2"><MechanicSelect mechanics={mechanics} /></div>
         <Field label="Valor del servicio" hint="Si tiene valor, el cliente gana puntos de taller." className="sm:col-span-2"><MoneyInput name="amount" /></Field>
         <Field label="Observaciones del técnico" className="sm:col-span-2"><textarea name="notes" rows={2} className="input" /></Field>
       </div>

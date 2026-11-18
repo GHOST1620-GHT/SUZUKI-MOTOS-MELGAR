@@ -7,6 +7,7 @@ import { db, schema as S } from "./db";
 import type { Category } from "./format";
 import { addMovement, LoyaltyError, makeReferralCode, registerPurchase } from "./loyalty";
 import { getSettings } from "./settings";
+import { resolveMechanic } from "./mechanics";
 
 export type ImportRow = {
   invoiceNumber: string;
@@ -18,6 +19,8 @@ export type ImportRow = {
   amount: number | string;
   category?: string | null;
   plate?: string | null;
+  /** Nombre del mecánico (solo cuenta en servicios de taller) */
+  mechanic?: string | null;
 };
 
 export function guessCategory(raw: string | null | undefined, fallback: Category): Category {
@@ -97,9 +100,12 @@ export async function importRows(rows: ImportRow[], opts: { defaultCategory: Cat
         if (m && m.customerId === customer.id) motorcycleId = m.id;
       }
 
+      const category = guessCategory(r.category, opts.defaultCategory);
+      const mechanicId = category === "TALLER" ? await resolveMechanic(r.mechanic) : null;
       const res = await registerPurchase({
         customerId: customer.id,
-        category: guessCategory(r.category, opts.defaultCategory),
+        category,
+        mechanicId,
         amount,
         date: parseDate(r.date) ?? new Date(),
         invoiceNumber: invoice,
